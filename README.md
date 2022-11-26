@@ -1,6 +1,7 @@
 # NCI Project
 
-## <ins>**Intro**</ins>
+
+## <ins>**Introduction**</ins>
 This project forms part of the final submission in the Higher Diploma in Cybersecurity with the National College. 
 
 Focused on providing enhanced layers of security for end users, this application aims to safely store user credentials by using layers of security that enhance the CIA triad.
@@ -8,6 +9,35 @@ Focused on providing enhanced layers of security for end users, this application
 At this point in time, the project is a POC based on evidence collected regarding various security flaws. This project is not intended for public use.
 
 ***As this project is a POC, and doesn't currently satisfy data privacy laws (including GDPR), this project has not been deployed. Debug is still enabled and other key security measures that would often be in place, including environment variables have not been implemented.***
+
+-------------------------------
+
+## **Table Of Contents**
+| **Reference** | **Section**     | **Sub-Section**          |
+|---------------|-----------------|--------------------------|
+| 1.0|[Intro](#intro)||
+| 2.0|[Project Outline](#project-outline) ||
+| 2.1||[Browser Security](#browser-security)|
+| 2.2||[Encryption & Decryption](#encryption--decryption)|
+| 3.0|[UX Design](#ux-design)||
+| 3.1||[5 Planes of UX](#5-planes-of-ux)|
+| 3.2||[User Stories](#user-stories)|
+| 3.3||[Information Architecture](#information-architecture)|
+| 3.4||[Responsive Design](#responsive-design)|
+| 4.0|[Features](#features)||
+| 4.1||[Current Features](#current-features)|
+| 4.2||[Future Features](#future-features)|
+| 5.0|[Technologies](#technologies-used)||
+| 5.1||[Languages](#languages)|
+| 5.2||[Frameworks, Libraries & Other](#frameworks-libraries--other) |
+| 6.0|[Testing](#testing)||
+| 6.1||[Bugs & Issues](#bugs--issues)|
+| 7.0|[Deployment](#deployment)||
+| 7.1|| [Requirements For Deployment](#requirements-for-deployment)|
+| 7.2|| [Cloning The Project](#cloning-this-project)|
+| 7.3|| [Working With Clone](#working-with-a-local-clone)|
+| 7.4|| [Deploying To Heroku](#deploy-to-heroku)|
+
 
 ------------------------------------------------------------------------------
 ## <ins>**Project Outline**</ins>
@@ -226,10 +256,10 @@ This project has passed through several phases of testing, these include:
 
 ### **Bugs & Issues**
 
-### Data Privacy:
+#### **Data Privacy:**
     As this application does not have policies in place that are available to end users, it is currently not configured to allow public usage.
 
-### Denial of Service Testing:
+#### **Denial of Service Testing:**
     As this application has not been deployed, the testing of Denial of Service has not been tested in a live environment.
 
 -----------------
@@ -374,3 +404,6 @@ Prior to completing this step, the application will have no styling and may not 
 > *To ensure these keys work, you must configure the settings file of your django application to find these variables using os.environ.*
 
 > Further information on setting environment variables can be found here: [Django Docs](https://docs.djangoproject.com/en/3.2/topics/settings/)
+
+
+------------------------
