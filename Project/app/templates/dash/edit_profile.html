@@ -1,0 +1,106 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %} 
+
+{% block backbtn %}
+<div class="back-btn">
+    <a href="{% url 'profile' %}" class="btn btn-outline-success">Back</a>
+</div>
+{% endblock backbtn %}
+
+
+{% block content %} 
+
+{% if next %}
+<style>
+    .intro{
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top:0;
+        width:100%;
+        height: auto;
+        transition: 1s;
+    }
+    .text-header{
+        position: absolute;
+        top:30%;
+        left:50%;
+        -ms-transform: translateY(-30%) translateX(-50%);
+        transform: translateY(-30%) translateX(-50%);
+        color: #fafafa;
+    }
+    .text{
+        position: relative;
+        display: inline-block;
+        bottom: -50px;
+        opacity: 0 !important;
+        text-shadow: 10px -80px 1px green;
+    }
+    .text.active{
+        bottom:0;
+        opacity: 1 !important;
+        text-shadow: 3px 6px 5px green;
+        transition: ease-in-out .7s;
+    }
+    .text.fade{
+        bottom:-50px;
+        opacity: 0 !important;
+        text-shadow: 0px 400px 1px green;
+        transition: ease-in-out .3s;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="intro">
+            <h1 class="text-header">
+                <span class="text">P</span><span class="text">R</span><span class="text">O</span><span class="text">F</span><span class="text">I</span><span class="text">L</span><span class="text">E</span>
+
+                <span class="text">U</span><span class="text">P</span><span class="text">D</span><span class="text">A</span><span class="text">T</span><span class="text">E</span><span class="text">D</span>
+            </h1>
+        </div>
+    </div>
+</div>
+<script>
+    let intro = document.querySelector('.intro');
+    let text = document.querySelector('.text-header');
+    let textSpan = document.querySelectorAll('.text');
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+        setTimeout(()=>{
+            textSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('active');
+                }, (idx + 1) * 75);
+            });
+        });
+
+        setTimeout(()=>{
+            textSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('fade');
+                }, (idx + 1) * 150);
+            });
+        }, 2800);
+
+        setTimeout(()=>{
+            window.location = '/profile';
+        }, 5500);
+    })
+</script>
+
+
+{% else %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 d-flex justify-content-center">
+            <form action="{% url 'edit_profile' %}" method="post">
+                {{form|crispy}}
+                <div class="d-grid gap-2 infront">
+                    <button class="btn btn-outline-success mt-3 text-light fw-bold">Update Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

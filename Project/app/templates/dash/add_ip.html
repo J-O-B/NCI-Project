@@ -1,0 +1,130 @@
+{% extends 'base.html' %} 
+{% load crispy_forms_tags %} 
+
+{% block backbtn %}
+<div class="back-btn">
+    <a href="{% url 'profile' %}" class="btn btn-outline-success">Back</a>
+</div>
+{% endblock backbtn %}
+
+
+{% block content %} 
+{% if next %}
+<style>
+    .intro{
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top:0;
+        width:100%;
+        height: auto;
+        transition: 1s;
+    }
+    .text-header{
+        position: absolute;
+        top:30%;
+        left:50%;
+        -ms-transform: translateY(-30%) translateX(-50%);
+        transform: translateY(-30%) translateX(-50%);
+        color: #fafafa;
+    }
+    .text{
+        position: relative;
+        display: inline-block;
+        bottom: -50px;
+        opacity: 0 !important;
+        text-shadow: 10px -80px 1px green;
+    }
+    .text.active{
+        bottom:0;
+        opacity: 1 !important;
+        text-shadow: 3px 6px 5px green;
+        transition: ease-in-out .7s;
+    }
+    .text.fade{
+        bottom:-50px;
+        opacity: 0 !important;
+        text-shadow: 0px 400px 1px green;
+        transition: ease-in-out .3s;
+    }
+</style>
+<div class="container-fluid">
+    <div class="row">
+        <div class="intro">
+            {% if next == "IP Already Exists" %} 
+                <h1 class="text-header">
+                    <span class="text">I</span><span class="text">P</span>
+                    <span class="text">A</span><span class="text">L</span><span class="text">R</span><span class="text">E</span><span class="text">A</span><span class="text">D</span><span class="text">Y</span>
+                    <span class="text">E</span><span class="text">X</span><span class="text">I</span><span class="text">S</span><span class="text">T</span><span class="text">S</span>
+                </h1>
+            {% else %}
+                <h1 class="text-header">
+                    <span class="text">I</span><span class="text">P</span>
+                    <span class="text">A</span><span class="text">D</span><span class="text">D</span><span class="text">E</span><span class="text">D</span>
+                </h1>
+            {% endif %}
+        </div>
+    </div>
+</div>
+<script>
+    let intro = document.querySelector('.intro');
+    let text = document.querySelector('.text-header');
+    let textSpan = document.querySelectorAll('.text');
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+        setTimeout(()=>{
+            textSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('active');
+                }, (idx + 1) * 75);
+            });
+        });
+
+        setTimeout(()=>{
+            textSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('fade');
+                }, (idx + 1) * 150);
+            });
+        }, 2800);
+
+        setTimeout(()=>{
+            window.location = '/profile';
+        }, 5500);
+    })
+</script>
+
+
+{% else %}
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>
+                <u>
+                    Add New IP Address
+                </u>
+            </h1>
+            <p class="fst-italic">
+                {{ip}}
+            </p>
+        </div>
+        {% if form %}
+            <div class="col-12 d-flex justify-content-center">
+                <form action="{% url 'add_ip' %}" method="post">
+                    <div class="d-flex align-items-center justify-content-around">
+                        <a href="{% url 'profile' %}" class="btn btn-outline-danger mt-3 mx-3 text-light fw-bold">No</a>
+                        <button class="btn btn-outline-success mt-3 mx-3 text-light fw-bold">Yes</button>
+                    </div>
+                </form>
+            </div>
+        {% else %}
+            <div class="col-12 d-flex justify-content-center">
+                <div class="d-flex align-items-center justify-content-around">
+                    <a href="{% url 'profile' %}" class="btn btn-outline-success mt-3 mx-3 text-light fw-bold">Back To Profile</a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
