@@ -1,0 +1,30 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+head{
+    display:block;
+}
+body{
+    background: rgba(0,0,0,0);
+}
+body::before{
+    display: inline-block;
+}
+#wrap{
+    padding: 10px;
+    margin:0;
+    width: 690px;
+    height:560px;
+    background-color: white;
+    border-radius: 16px;
+}
+#wrap iframe{
+    box-sizing: border-box;
+    border-radius: 16px;
+    box-shadow: 
+        2px 2px 3px rgba(0,0,0,0.8),
+        5px 5px 5px rgba(0,0,0,0.4),
+        0px 0px 30px rgba(0,0,0,0.5);
+
+}
