@@ -1,0 +1,14 @@
+{% extends "base.html" %} 
+
+
+{% block content %} 
+<div class="container">
+  <div class="row">
+    <div class="col-12 text-center">
+      <h1>Oops, An Error Occurred</h1>
+      <p>Please Go Back To The Main Application</p>
+      <a href="{% url 'home' %}" class="btn btn-sm btn-outline-dark rounded-3">Back To App</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
