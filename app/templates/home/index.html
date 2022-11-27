@@ -1,0 +1,208 @@
+{% extends "base.html" %} 
+
+
+{% block content %} 
+{% if profile %}
+<style>
+    #main{
+        opacity: 0 !important;
+        transition: ease-in-out 1s;
+        z-index: 3;
+        position: relative;
+    }
+    #main.active{
+        opacity: 1 !important;
+        transition: ease-in-out 1s;
+    }
+    #welcome{
+        opacity: 0 !important;
+        transition: ease-in-out 1s;
+        z-index: 2;
+        position: relative;
+    }
+    #welcome.active{
+        opacity: 1 !important;
+        transition: ease-in-out 1s;
+    }
+    .intro{
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top:0;
+        width:100%;
+        height: auto;
+        transition: 1s;
+    }
+    .logo-header{
+        position: absolute;
+        top:30%;
+        left:50%;
+        -ms-transform: translateY(-30%) translateX(-50%);
+        transform: translateY(-30%) translateX(-50%);
+        color: #fafafa;
+    }
+    .logo{
+        position: relative;
+        display: inline-block;
+        bottom: -50px;
+        opacity: 0 !important;
+        text-shadow: 10px -80px 10px rgba(0,128,0,.5);
+    }
+    .logo.active{
+        bottom:0;
+        opacity: 1 !important;
+        text-shadow: 3px 6px 5px green;
+        transition: ease-in-out 1.3s;
+    }
+    .logo.fade{
+        bottom:-50px;
+        opacity: 0 !important;
+        text-shadow: 0px 400px 100px rgba(0,128,0,.5);
+        transition: ease-in-out 1.5s;
+    }
+</style>
+<div id="welcome" class="container-fluid active">
+    <div class="row">
+        <div class="intro w-100 text-center">
+            <h1 class="h3 logo-header w-100 text-center">
+                <span class="logo">Welcome</span>
+                <span class="logo">Back</span>
+                <span class="logo">{{profile.name|title}}</span>
+            </h1>
+        </div>
+    </div>
+</div>
+<div id="main" class="container-fluid">
+    <div class="row">
+        <div class="col-4 d-flex justify-content-center">
+            <div class="btn-holder">
+                <button id="showprof" onclick="showSection('prof')" class="btn btn-sm btn-outline-success active w-100">Profile</button>
+                <button id="showcreds" onclick="showSection('creds')" class="btn btn-sm btn-outline-success w-100">Credentials</button>
+                <button id="showdevice" onclick="showSection('device')" class="btn btn-sm btn-outline-success w-100">Add Device</button>
+                <button id="showip" onclick="showSection('ip')" class="btn btn-sm btn-outline-success w-100">Add IP</button>
+            </div>
+        </div>
+        <div id="indexHolder" class="col-8 px-2 relative">
+            <div class="w-100 active" id="prof">
+                <h2>
+                    <u>
+                        Profile
+                    </u>
+                </h2>
+                <p class="fst-italic">
+                    From This Section You Can View / Edit Your Profile
+                </p>
+                <a href="{% url 'profile' %}" class="btn btn-outline-light btn-sm rounded-3">
+                    View / Edit Profile
+                </a>
+            </div>
+            <div class="w-100" id="creds">
+                <h2>
+                    <u>
+                        Credentials
+                    </u>
+                </h2>
+                <p class="fst-italic">
+                    From This Section You Can View / Edit Your Saved Credentials
+                </p>
+                <a href="{% url 'creds' %}" class="btn btn-outline-light btn-sm rounded-3">
+                    View / Edit Credentials
+                </a>
+            </div>
+            <div class="w-100" id="device">
+                <h2>
+                    <u>
+                        Add A New Device
+                    </u>
+                </h2>
+                <p class="fst-italic">
+                    From This Section You Can Add A Known Device
+                </p>
+                <a href="{% url 'add_device' %}" class="btn btn-outline-light btn-sm rounded-3">
+                    Add A Device
+                </a>
+            </div>
+            <div class="w-100" id="ip">
+                <h2>
+                    <u>
+                        Add A New IP
+                    </u>
+                </h2>
+                <p class="fst-italic">
+                    From This Section You Can Add An IP
+                </p>
+                <a href="{% url 'add_ip' %}" class="btn btn-outline-light btn-sm rounded-3">
+                    Add New IP
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function showSection(section){
+        target = section;
+        section = "#" + target;
+        button = "#show" + target;
+        $(section).siblings().removeClass('active');
+        $(section).addClass('active');
+        $(button).siblings().each(function(){
+            $(this).removeClass('active');
+        });
+        $(button).addClass('active');
+    }
+
+    let intro = document.querySelector('.intro');
+    let logo = document.querySelector('.logo-header');
+    let logoSpan = document.querySelectorAll('.logo');
+    let main = document.getElementById('main');
+    let welcome = document.getElementById('welcome');
+    
+    window.addEventListener('DOMContentLoaded', ()=>{
+        setTimeout(()=>{
+            logoSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('active');
+                }, (idx + 1) * 200);
+            });
+        }, 200);
+
+        setTimeout(()=>{
+            logoSpan.forEach((span, idx)=>{
+                setTimeout(()=>{
+                    span.classList.add('fade');
+                }, (idx + 1) * 400);
+            });
+        }, 2800);
+
+        setTimeout(()=>{
+            welcome.classList.remove('active');
+            main.classList.add('active');
+        }, 5000);
+
+    })
+</script>
+{% else %}
+<div class="container-fluid">
+    <div class="row pt-5">
+        <div class="col-12 text-center">
+            <hr class="w-50 mx-auto border border-success">
+            <h1 class="h3 mt-5">Welcome</h1>
+            <p class="lead fst-italic text-capitalize pb-4">
+                It looks like you're not logged in.
+                <br><br>
+                Please login or register to continue....
+            </p>
+            <div class="w-100 d-flex align-items-center justify-content-center mt-4">
+                <a href="{% url 'account_login' %}" class="intro-btn btn btn-outline-light text-success mx-3">
+                    Login
+                </a>
+                <a href="{% url 'account_signup' %}" class="intro-btn btn btn-outline-success mx-3">
+                    Register
+                </a>
+            </div>
+            <hr class="w-50 mx-auto border border-success mt-5">
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
