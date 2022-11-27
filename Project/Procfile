@@ -1,1 +1,1 @@
-web: gunicorn extension.wsgi:application
+web: gunicorn extension.wsgi
