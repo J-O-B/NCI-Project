@@ -2,6 +2,11 @@
 
 
 {% block content %} 
+<div id="page" class="hidden">
+  {% if obf %} 
+      {{obf}}
+  {% endif %}
+</div> 
 <div class="container">
   <div class="row">
     <div class="col-12 text-center">
