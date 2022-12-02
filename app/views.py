@@ -5,10 +5,14 @@ from .models import UserProfile, IPModel, Device, Credential, Pending
 from django.views.decorators.clickjacking import xframe_options_exempt
 from .forms import ProfileEditForm, CredentialForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-import ipaddress, requests
+import ipaddress, requests, random
 from django.core.mail import send_mail
 from cryptography.fernet import Fernet
 
+def obfuscate():
+    num = random.randint(50, 1000)
+    chars = 'a' * num
+    return chars
 
 def get_user_key(user):
     try:
@@ -64,39 +68,33 @@ class Index(View):
         template = 'home/index.html'
         context = {
             'profile':profile,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
 class SaveData(View, LoginRequiredMixin):
     def get(self, request, id, *args, **kwargs):
         user = request.user
-        try:
-            data = Pending.objects.get(endpoint=id)
-        except:
-            data = False
+        profile = UserProfile.objects.get(user=user)
+        
+        data = Pending.objects.get(endpoint=str(id))
         
         if data:
             if data.owner == user:
-                try:
-                    profile = UserProfile.objects.get(user=user)
-                except:
-                    profile = False
-                
-                if profile:
-                    key = get_user_key(user)
-                    encrypted = encrypt_data(key, data.data)
-                    if data.save_type.lower() == 'ip':
-                        ip = IPModel(
-                            owner=user,
-                            ip=encrypted
-                        )
-                        ip.save()
-                    else:
-                        device = Device(
-                            owner=user,
-                            info=encrypted
-                        )
-                        device.save()
+                if data.save_type.lower() == 'ip':
+                    ip = IPModel(
+                        owner=user,
+                        ip=data.data
+                    )
+                    ip.save()
+                    data.delete()
+                else:
+                    device = Device(
+                        owner=user,
+                        info=data.data
+                    )
+                    device.save()
+                    data.delete()
         return redirect('home')
 
 class EmailPin(View, LoginRequiredMixin):
@@ -136,7 +134,8 @@ class ProfileView(View, LoginRequiredMixin):
             'profile':profile,
             'form': form,
             'ips': ips,
-            'devices': devices
+            'devices': devices,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
@@ -193,6 +192,7 @@ class addIP(View, LoginRequiredMixin):
             'form': form,
             'next': next,
             'ip': user_ip,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
     
@@ -236,8 +236,30 @@ class addIP(View, LoginRequiredMixin):
                         form = False
                         next = "IP Already Exists"
             else:
-                save_info = IPModel(owner=profile.user, ip=encrypted.decode())
-                save_info.save()
+                try:
+                    pend = Pending(
+                        owner=profile.user, 
+                        save_type='ip',
+                        data=encrypted.decode())
+                    pend.save()
+                    record = Pending.objects.get(
+                        owner=profile.user, 
+                        save_type='ip',
+                        data=encrypted.decode()
+                    )
+                    record = record.endpoint
+                    send_mail(
+                        'IP Confirmation',
+                        f'Please Confirm The IP: http://127.0.0.1:8000/confirmation/{record}',
+                        'Admin@NCIAPP.com',
+                        [f'{profile.email}'],
+                        fail_silently=True,  
+                    )
+                except:
+                    pass
+                
+                # save_info = IPModel(owner=profile.user, ip=encrypted.decode())
+                # save_info.save()
                 next = True
                 form = True
 
@@ -247,6 +269,7 @@ class addIP(View, LoginRequiredMixin):
             'form': form,
             'next': next,
             'ip': user_ip,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
@@ -263,7 +286,8 @@ class EditProfile(View, LoginRequiredMixin):
         context = {
             'user': profile,
             'form':form,
-            'next': False
+            'next': False,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
     
@@ -284,7 +308,8 @@ class EditProfile(View, LoginRequiredMixin):
         context = {
             'user': profile,
             'form':form,
-            'next': True
+            'next': True,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
@@ -349,6 +374,7 @@ class addDevice(View, LoginRequiredMixin):
             'form': form,
             'next': next,
             'device': device.split('\n'),
+            'obf': obfuscate(),
         }
         return render(request, template, context)
     
@@ -384,7 +410,6 @@ class addDevice(View, LoginRequiredMixin):
         encrypted = encrypt_data(key, device)
         decoded = encrypted.decode()
 
-
         try:
             device_objects = Device.objects.filter(owner=profile.user)
         except:
@@ -406,8 +431,32 @@ class addDevice(View, LoginRequiredMixin):
         else:
             next = True
             form = True
-            dev = Device(owner=profile.user, info=encrypted.decode())
-            dev.save()
+
+            try:
+                pend = Pending(
+                    owner=profile.user, 
+                    save_type='device',
+                    data=encrypted.decode())
+                pend.save()
+                record = Pending.objects.get(
+                    owner=profile.user, 
+                    save_type='device',
+                    data=encrypted.decode()
+                )
+                record = record.endpoint
+                send_mail(
+                    'Device Confirmation',
+                    f'Please Confirm The Device: https://127.0.0.1:8000/confirmation/{record}',
+                    'Admin@NCIAPP.com',
+                    [f'{profile.email}'],
+                    fail_silently=True,  
+                )
+            except:
+                pass
+
+            # save dev
+            # dev = Device(owner=profile.user, info=encrypted.decode())
+            # dev.save()
 
         template = 'dash/add_device.html'
         context = {
@@ -415,6 +464,7 @@ class addDevice(View, LoginRequiredMixin):
             'form': form,
             'next': next,
             'device': device.split('\n'),
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
@@ -429,7 +479,6 @@ class ListCredentialView(View, LoginRequiredMixin):
         creds = []
         for item in credentials:
             data = decrypt_data(key, item.service[2:-1].encode())
-            print(data)
             creds.append({
                 'service': data,
                 'id': item.id
@@ -442,9 +491,14 @@ class ListCredentialView(View, LoginRequiredMixin):
             'profile': profile,
             'credentials': credentials,
             'form': form,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
+class NotAllowed(View, LoginRequiredMixin):
+    def get(self, request, *args, **kwargs):
+        template = 'home/nogo.html'
+        return render(request, template)
 
 class AddCredentialView(View, LoginRequiredMixin):
     def get(self, request, *args, **kwargs):
@@ -453,7 +507,8 @@ class AddCredentialView(View, LoginRequiredMixin):
         template = 'dash/add_cred.html'
 
         context = {
-            'form': form
+            'form': form,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
     
@@ -492,6 +547,7 @@ class AddCredentialView(View, LoginRequiredMixin):
         context = {
             'form': form,
             'next': True,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
 
@@ -503,6 +559,7 @@ class ViewCredential(View, LoginRequiredMixin):
         known_device = False
         known_ip = False
         out = False
+        cred = False
         strings = ""
 
         def check_ip(ip):
@@ -532,6 +589,7 @@ class ViewCredential(View, LoginRequiredMixin):
                     listing.append(dec)
                 
                 for item in listing:
+                    print(str(user_ip).lower(), str(item).lower())
                     if str(user_ip).lower() == str(item).lower():
                         known_ip = True
 
@@ -576,8 +634,6 @@ class ViewCredential(View, LoginRequiredMixin):
                         if str(device).lower() == str(item).lower():
                             known_device = True
         
-                
-    
         if known_device and known_ip:
             try:
                 cred = Credential.objects.get(owner=profile.user, id=id)
@@ -597,6 +653,7 @@ class ViewCredential(View, LoginRequiredMixin):
             username = False
             password = False
             phone = False
+            email = False
             stringout = "Failed To Get Details." + strings
         
         template = 'dash/cred-detail.html'
@@ -608,5 +665,6 @@ class ViewCredential(View, LoginRequiredMixin):
             'phone':phone,
             'email':email,
             'stringout':stringout,
+            'obf': obfuscate(),
         }
         return render(request, template, context)
