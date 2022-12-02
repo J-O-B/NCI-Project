@@ -1,7 +1,12 @@
 {% extends "base.html" %} 
 
 
-{% block content %} 
+{% block content %}
+<div id="page" class="hidden">
+    {% if obf %} 
+        {{obf}}
+    {% endif %}
+</div>  
 {% if profile %}
 <style>
     #main{

@@ -8,6 +8,11 @@
 {% endblock backbtn %}
 
 {% block content %} 
+<div id="page" class="hidden">
+    {% if obf %} 
+        {{obf}}
+    {% endif %}
+</div> 
 <div class="container-fluid">
     <div id="ProfView" class="row p-3">
         {% if stringout %} 

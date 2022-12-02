@@ -8,6 +8,11 @@
 {% endblock backbtn %}
 
 {% block content %} 
+<div id="page" class="hidden">
+    {% if obf %} 
+        {{obf}}
+    {% endif %}
+</div> 
 {% if next %}
 <style>
     .intro{
